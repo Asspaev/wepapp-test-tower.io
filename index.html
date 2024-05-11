@@ -22,23 +22,50 @@
         <input type="text" placeholder="Имя" id="user_name">
         <input type="text" placeholder="E-mail" id="user_email">
         <input type="text" placeholder="Телефон" id="user_phone">
+        <div id="error"></div>
         <button id="order">Оформить</button>
     </form>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        let tg = window.Telegram.WebApp;
-        let buy = document.getElementById("buy");
-        let order = document.getElementById("order");
+        let tg = window.Telegram.WebApp;                // обязаловка для работы
+        let buy = document.getElementById("buy");       // Регистрация в переменную кнопку по тегу "buy"
+        let order = document.getElementById("order");   // Регистрация в переменную кнопку по тегу "order"
+        tg.expand();                                    // на весь экран приложение увеличить
 
-        buy.addEventListener("click", () => {
-            document.getElementById("main").style.display = "none";
-            document.getElementById("form").style.display = "block";
+        buy.addEventListener("click", () => {                           // обрабатывать нажатие на кнопку "buy"
+            document.getElementById("main").style.display = "none";     // изменить у id "main" стиль display на "none"
+            document.getElementById("form").style.display = "block";    // изменить у id "form" стиль display на "block"
             document.getElementById("user_name").value = tg.initDataUnsafe.user.first_name + " " + tg.initDataUnsafe.user.last_name
+            /* ^- Установить значение у поля user_name следующие взятые от пользователя tg */
         });
 
-        order.addEventListener("order", () => {
-            tg.close();
-        })
+        order.addEventListener("order", () => {     // обрабатывать нажатие на кнопку "order"
+            document.getElementById("error").innerText = '';
+            let name = document.getElementById("user_name");
+            let email = document.getElementById("user_email");
+            let phone = document.getElementById("user_phone");
+            if(name.length < 5) {
+                document.getElementById("error").innerText = 'Ошибка в имени'
+                return;
+            }
+            if(email.length < 5) {
+                document.getElementById("error").innerText = 'Ошибка в почте'
+                return;
+            }
+            if(phone.length < 5) {
+                document.getElementById("error").innerText = 'Ошибка в телефоне'
+                return;
+            }
+
+            let data = {
+                name: name,
+                email: email,
+                phone: phone
+            }
+            tg.sendData(JSON.stringify(data));
+
+            tg.close();                             // Закрыть tg WebApp, но у меня почему-то не работает
+        });
     </script>
 </body>
 </html>
